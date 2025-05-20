@@ -43,8 +43,8 @@ https://github.com/hustvl/VAD/assets/45144254/153b9bf0-5159-46b5-9fab-573baf5c61
 
 | Method | Backbone | avg. L2 | avg. Col. | FPS | Config | Download |
 | :---: | :---: | :---: | :---: |  :---: | :---: | :---: |
-| VAD-Tiny | R50 | 0.78 | 0.38 | 16.8 | [config](projects/configs/VAD/VAD_tiny_stage_2.py) | [model](https://drive.google.com/file/d/1KgCC_wFqPH0CQqdr6Pp2smBX5ARPaqne/view?usp=sharing) |
-| VAD-Base | R50 | 0.72 | 0.22 | 4.5 | [config](projects/configs/VAD/VAD_base_stage_2.py) | [model](https://drive.google.com/file/d/1FLX-4LVm4z-RskghFbxGuYlcYOQmV5bS/view?usp=sharing) |
+| VAD-Tiny | R50 | 0.78 | 0.38 | 16.8 | [config](configs/VAD/VAD_tiny_stage_2.py) | [model](https://drive.google.com/file/d/1KgCC_wFqPH0CQqdr6Pp2smBX5ARPaqne/view?usp=sharing) |
+| VAD-Base | R50 | 0.72 | 0.22 | 4.5 | [config](configs/VAD/VAD_base_stage_2.py) | [model](https://drive.google.com/file/d/1FLX-4LVm4z-RskghFbxGuYlcYOQmV5bS/view?usp=sharing) |
 
 ## Results
 - Open-loop planning results on [nuScenes](https://github.com/nutonomy/nuscenes-devkit). See the [paper](https://arxiv.org/abs/2303.12077) for more details.
