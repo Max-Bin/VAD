@@ -122,8 +122,11 @@ def get_extensions():
         # prevent ninja from using too many resources
         try:
             import psutil
-            num_cpu = len(psutil.Process().cpu_affinity())
-            cpu_use = max(4, num_cpu - 1)
+            cpu_use =4
+            # usually the compiling process will not cost too much time, using more cpus may cause the pc to be freezed
+            # of course you can uncomment the following to enjoy a fatser compiling speed.
+            # num_cpu = len(psutil.Process().cpu_affinity())
+            # cpu_use = max(4, num_cpu - 1)
         except (ModuleNotFoundError, AttributeError):
             cpu_use = 4
 
