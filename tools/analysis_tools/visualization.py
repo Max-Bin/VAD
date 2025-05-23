@@ -671,7 +671,7 @@ def obtain_sensor2top(nusc,
     return sensor2lidar_rotation, sensor2lidar_translation
 
 def render_sample_data(
-        sample_toekn: str,
+        sample_token: str,
         with_anns: bool = True,
         box_vis_level: BoxVisibility = BoxVisibility.ANY,
         axes_limit: float = 40,
@@ -716,7 +716,7 @@ def render_sample_data(
         to False, the colors of the lidar data represent the distance from the center of the ego vehicle.
         If show_lidarseg is True, show_panoptic will be set to False.
     """
-    lidiar_render(sample_toekn, pred_data, out_path=out_path,
+    lidiar_render(sample_token, pred_data, out_path=out_path,
                   out_name=out_name, traj_use_perstep_offset=traj_use_perstep_offset)
 
 
@@ -749,7 +749,7 @@ if __name__ == '__main__':
                            out_path=out_path)
         pred_path = osp.join(out_path, 'bev_pred.png')
         pred_img = cv2.imread(pred_path)
-        os.remove(pred_path)
+        # os.remove(pred_path)
 
         sample_token = sample_token_list[id]
         sample = nusc.get('sample', sample_token)
