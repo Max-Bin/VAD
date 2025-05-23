@@ -15,15 +15,15 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from pyquaternion import Quaternion
 from nuscenes.nuscenes import NuScenes
-from mmdet.datasets.pipelines import to_tensor
+from mmcv.datasets.pipelines import to_tensor
 from matplotlib.collections import LineCollection
 from nuscenes.utils.data_classes import LidarPointCloud, Box
 from nuscenes.eval.common.data_classes import EvalBoxes, EvalBox
 from nuscenes.eval.detection.utils import category_to_detection_name
 from nuscenes.utils.geometry_utils import view_points, box_in_image, BoxVisibility
-
-from projects.mmdet3d_plugin.core.bbox.structures.nuscenes_box import CustomNuscenesBox, CustomDetectionBox, color_map
-from projects.mmdet3d_plugin.datasets.nuscenes_vad_dataset import VectorizedLocalMap, LiDARInstanceLines
+from mmcv.fileio.io import load
+from mmcv.core.bbox.structures.nuscenes_box import CustomNuscenesBox, CustomDetectionBox, color_map
+from mmcv.datasets.nuscenes_vad_dataset import VectorizedLocalMap, LiDARInstanceLines
 
 
 cams = ['CAM_FRONT',
@@ -733,7 +733,7 @@ if __name__ == '__main__':
     args = parse_args()
     inference_result_path = args.result_path
     out_path = args.save_path
-    bevformer_results = mmcv.load(inference_result_path)
+    bevformer_results = load(inference_result_path)
     sample_token_list = list(bevformer_results['results'].keys())
 
     nusc = NuScenes(version='v1.0-trainval', dataroot='./data/nuscenes', verbose=True)

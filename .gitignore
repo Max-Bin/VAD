@@ -140,6 +140,8 @@ data/
 outputs*/
 test/
 INFO
+*.pkl
+visualization/
 
 # experimental files
 .no_*
