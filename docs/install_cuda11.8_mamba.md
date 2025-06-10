@@ -27,13 +27,9 @@ Detailed package versions can be found in [requirements.txt](../requirements.txt
 - **STEP 4: Set environment variables**
     ```
     # cuda 11.8 and GCC 9.4 is strongly recommended. Otherwise, it might encounter errors.
-    export PATH=YOUR_GCC_PATH/bin:$PATH
-    export CUDA_HOME=YOUR_CUDA_PATH/
+    # The following command might be used.
     ```
-    or
-    ```
-    mamba install -c conda-forge c-compiler cxx-compiler gcc_linux-64=9.4 gxx_linux-64=9.4 make -y
-
+    mamba install -c conda-forge c-compiler cxx-compiler gcc_linux-64=9.4 gxx_linux-64=9.4 
     ```
 - **STEP 5: Install ninja and packaging**
     ```

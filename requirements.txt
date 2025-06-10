@@ -1,5 +1,5 @@
 cython
-numba==0.48.0 # In order to speed up
+numba==0.48.0 # In order to speed up (0.55.1)
 addict
 packaging
 Pillow
@@ -23,7 +23,7 @@ networkx
 ipython
 opencv-python
 seaborn
-numpy==1.20.0 # In order to adapt numba
+numpy==1.23.0
 # metric related
 einops
 casadi
@@ -46,3 +46,8 @@ transforms3d
 tabulate
 ephem
 dictor
+onnx 
+onnxsim 
+protobuf 
+onnx_graphsurgeon
+pycuda
