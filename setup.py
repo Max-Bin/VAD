@@ -8,7 +8,6 @@ import torch
 from torch.utils.cpp_extension import BuildExtension, CppExtension, CUDAExtension
 
 EXT_TYPE = 'pytorch'
-cmd_class = {'build_ext': BuildExtension}
 
 def make_cuda_ext(name,
                   module,
@@ -41,27 +40,14 @@ def make_cuda_ext(name,
         extra_compile_args=extra_compile_args)
 
 def parse_requirements(fname='requirements.txt', with_version=True):
-    """Parse the package dependencies listed in a requirements file but strips
-    specific versioning information.
-
-    Args:
-        fname (str): path to requirements file
-        with_version (bool, default=False): if True include version specs
-
-    Returns:
-        List[str]: list of requirements items
-
-    CommandLine:
-        python -c "import setup; print(setup.parse_requirements())"
-    """
+    """解析requirements文件"""
     import sys
     from os.path import exists
     require_fpath = fname
 
     def parse_line(line):
-        """Parse information from a line in a requirements text file."""
+        """解析requirements文件中的每一行"""
         if line.startswith('-r '):
-            # Allow specifying requirements in other files
             target = line.split(' ')[1]
             for info in parse_require_file(target):
                 yield info
@@ -70,7 +56,6 @@ def parse_requirements(fname='requirements.txt', with_version=True):
             if line.startswith('-e '):
                 info['package'] = line.split('#egg=')[1]
             else:
-                # Remove versioning from the package
                 pat = '(' + '|'.join(['>=', '==', '>']) + ')'
                 parts = re.split(pat, line, maxsplit=1)
                 parts = [p.strip() for p in parts]
@@ -79,13 +64,11 @@ def parse_requirements(fname='requirements.txt', with_version=True):
                 if len(parts) > 1:
                     op, rest = parts[1:]
                     if ';' in rest:
-                        # Handle platform specific dependencies
-                        # http://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-platform-specific-dependencies
                         version, platform_deps = map(str.strip,
                                                      rest.split(';'))
                         info['platform_deps'] = platform_deps
                     else:
-                        version = rest  # NOQA
+                        version = rest
                     info['version'] = (op, version)
             yield info
 
@@ -104,7 +87,6 @@ def parse_requirements(fname='requirements.txt', with_version=True):
                 if with_version and 'version' in info:
                     parts.extend(info['version'])
                 if not sys.version.startswith('3.4'):
-                    # apparently package_deps are broken in 3.4
                     platform_deps = info.get('platform_deps')
                     if platform_deps is not None:
                         parts.append(';' + platform_deps)
@@ -115,18 +97,20 @@ def parse_requirements(fname='requirements.txt', with_version=True):
     return packages
 
 def get_extensions():
+    """获取扩展模块"""
     extensions = []
     
     if EXT_TYPE == 'pytorch':
         ext_name = 'mmcv._ext'
-        # prevent ninja from using too many resources
+        
+        # 强制设置环境变量
+        os.environ['MMCV_WITH_OPS'] = '1'
+        os.environ['FORCE_CUDA'] = '1'
+        
+        # 限制ninja使用的资源
         try:
             import psutil
-            cpu_use =4
-            # usually the compiling process will not cost too much time, using more cpus may cause the pc to be freezed
-            # of course you can uncomment the following to enjoy a fatser compiling speed.
-            # num_cpu = len(psutil.Process().cpu_affinity())
-            # cpu_use = max(4, num_cpu - 1)
+            cpu_use = min(4, psutil.cpu_count())
         except (ModuleNotFoundError, AttributeError):
             cpu_use = 4
 
@@ -148,6 +132,7 @@ def get_extensions():
         include_dirs = []
 
         if torch.cuda.is_available():
+            print(f'Building {ext_name} with CUDA support')
             define_macros += [('MMCV_WITH_CUDA', None)]
             cuda_args = os.getenv('MMCV_CUDA_ARGS')
             extra_compile_args['nvcc'] = [cuda_args] if cuda_args else []
@@ -159,7 +144,7 @@ def get_extensions():
             include_dirs.append(os.path.abspath('./mmcv/ops/csrc/common'))
             include_dirs.append(os.path.abspath('./mmcv/ops/csrc/common/cuda'))
         else:
-            print(f'Compiling {ext_name} without CUDA')
+            print(f'Building {ext_name} without CUDA')
             op_files = glob.glob('./mmcv/ops/csrc/pytorch/*.cpp') + \
                 glob.glob('./mmcv/ops/csrc/pytorch/cpu/*.cpp')
             extension = CppExtension
@@ -171,57 +156,80 @@ def get_extensions():
             else:
                 extra_compile_args['nvcc'] += ['-std=c++17']
 
-        ext_ops = extension(
-            name=ext_name,
-            sources=op_files,
-            include_dirs=include_dirs,
-            define_macros=define_macros,
-            extra_compile_args=extra_compile_args)
-        extensions.append(ext_ops)
+        # 确保有源文件可以编译
+        if op_files:
+            ext_ops = extension(
+                name=ext_name,
+                sources=op_files,
+                include_dirs=include_dirs,
+                define_macros=define_macros,
+                extra_compile_args=extra_compile_args)
+            extensions.append(ext_ops)
+        else:
+            print(f'Warning: No source files found for {ext_name}')
 
     return extensions
 
-setup(
-    name='mmcv',
-    version='0.0.1',
-    description='OpenMMLab Computer Vision Foundation',
-    keywords='computer vision',
-    packages=[
-        *find_packages(include=('mmcv', "mmcv.*")), 
-        *find_packages(include=('adzoo', "adzoo.*")), 
-    ],
-    include_package_data=True,
-    classifiers=[
-        'Development Status :: 4 - Beta',
-        'License :: OSI Approved :: Apache Software License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Topic :: Utilities',
-    ],
-    url='https://github.com/open-mmlab/mmcv',
-    author='MMCV Contributors',
-    author_email='openmmlab@gmail.com',
-    install_requires=parse_requirements(),
-    ext_modules= get_extensions() + [
-            make_cuda_ext(
-                name='iou3d_cuda',
-                module='mmcv.ops.iou3d_det',
-                sources=[
-                    'src/iou3d.cpp',
-                    'src/iou3d_kernel.cu',
-                ]),
-            make_cuda_ext(
-                name='roiaware_pool3d_ext',
-                module='mmcv.ops.roiaware_pool3d',
-                sources=[
-                    'src/roiaware_pool3d.cpp',
-                    'src/points_in_boxes_cpu.cpp',
-                ],
-                sources_cuda=[
-                    'src/roiaware_pool3d_kernel.cu',
-                    'src/points_in_boxes_cuda.cu',
-                ]),
-    ],
-    cmdclass=cmd_class,
-    zip_safe=False)
+def get_additional_extensions():
+    """获取额外的CUDA扩展"""
+    extensions = []
+    
+    # iou3d扩展
+    iou3d_ext = make_cuda_ext(
+        name='iou3d_cuda',
+        module='mmcv.ops.iou3d_det',
+        sources=[
+            'src/iou3d.cpp',
+            'src/iou3d_kernel.cu',
+        ])
+    
+    # roiaware扩展
+    roiaware_ext = make_cuda_ext(
+        name='roiaware_pool3d_ext',
+        module='mmcv.ops.roiaware_pool3d',
+        sources=[
+            'src/roiaware_pool3d.cpp',
+            'src/points_in_boxes_cpu.cpp',
+        ],
+        sources_cuda=[
+            'src/roiaware_pool3d_kernel.cu',
+            'src/points_in_boxes_cuda.cu',
+        ])
+    
+    if iou3d_ext is not None:
+        extensions.append(iou3d_ext)
+    if roiaware_ext is not None:
+        extensions.append(roiaware_ext)
+    
+    return extensions
+
+if __name__ == '__main__':
+    # 确保环境变量设置
+    os.environ['MMCV_WITH_OPS'] = '1'
+    os.environ['FORCE_CUDA'] = '1'
+    
+    setup(
+        name='mmcv',
+        version='0.0.1',
+        description='OpenMMLab Computer Vision Foundation',
+        keywords='computer vision',
+        packages=[
+            *find_packages(include=('mmcv', "mmcv.*")), 
+            *find_packages(include=('adzoo', "adzoo.*")), 
+        ],
+        include_package_data=True,
+        classifiers=[
+            'Development Status :: 4 - Beta',
+            'Operating System :: OS Independent',
+            'Programming Language :: Python :: 3.8',
+            'Programming Language :: Python :: 3.9',
+            'Programming Language :: Python :: 3.10',
+            'Topic :: Utilities',
+        ],
+        url='https://github.com/open-mmlab/mmcv',
+        author='MMCV Contributors',
+        author_email='openmmlab@gmail.com',
+        install_requires=parse_requirements(),
+        ext_modules=get_extensions() + get_additional_extensions(),
+        cmdclass={'build_ext': BuildExtension},
+        zip_safe=False)

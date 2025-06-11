@@ -12,23 +12,22 @@ Detailed package versions can be found in [requirements.txt](../requirements.txt
     Please follow for https://github.com/conda-forge/miniforge for installation.
     After installing it, run the following commands to start a new environment.
     ```
-    mamba create -n vad python=3.8 -y
+    mamba create -n vad python=3.10 -y
     mamba activate vad
     ```
 
 - **STEP 2: Install cudatoolkit**
     ```
-    mamba install -c "nvidia/label/cuda-11.8.0" cuda-toolkit
+    mamba install -c "nvidia/label/cuda-12.8.0" cuda-toolkit
     ```
 - **STEP 3: Install torch**
     ```
-    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+    pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
     ```
 - **STEP 4: Set environment variables**
     ```
-    # cuda 11.8 and GCC 9.4 is strongly recommended. Otherwise, it might encounter errors.
+    # GCC 9.4 is strongly recommended. Otherwise, it might encounter errors.
     # The following command might be used.
-    ```
     mamba install -c conda-forge c-compiler cxx-compiler gcc_linux-64=9.4 gxx_linux-64=9.4 
     ```
 - **STEP 5: Install ninja and packaging**
@@ -37,7 +36,7 @@ Detailed package versions can be found in [requirements.txt](../requirements.txt
     ```
 - **STEP 6: Install our repo**
     ```
-    pip install -v -e .
+    pip install -e . --no-build-isolation
     ```
 
 - **STEP 7: Prepare pretrained weights.**
