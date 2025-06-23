@@ -49,7 +49,7 @@ model = dict(
     type='VAD',
     use_grid_mask=True,
     video_test_mode=True,
-    pretrained=dict(img='torchvision://resnet50'),
+    pretrained=dict(img='ckpts/resnet50-19c8e357.pth'),
     img_backbone=dict(
         type='ResNet',
         depth=50,
@@ -356,8 +356,8 @@ test_pipeline = [
 ]
 
 data = dict(
-    samples_per_gpu=1,
-    workers_per_gpu=4,
+    samples_per_gpu=16,
+    workers_per_gpu=16,
     train=dict(
         type=dataset_type,
         data_root=data_root,
@@ -407,7 +407,7 @@ data = dict(
 
 optimizer = dict(
     type='AdamW',
-    lr=2e-4,
+    lr=8e-4,
     paramwise_cfg=dict(
         custom_keys={
             'img_backbone': dict(lr_mult=0.1),
@@ -419,7 +419,7 @@ optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
 lr_config = dict(
     policy='CosineAnnealing',
     warmup='linear',
-    warmup_iters=500,
+    warmup_iters=32,
     warmup_ratio=1.0 / 3,
     min_lr_ratio=1e-3)
 
