@@ -41,7 +41,7 @@ def load_checkpoint(model,
         f'load checkpoint from path: {filename}', logger)
     if not osp.isfile(filename):
         raise IOError(f'{filename} is not a checkpoint file')
-    checkpoint = torch.load(filename, map_location=map_location)
+    checkpoint = torch.load(filename, map_location=map_location, weights_only=False)
     # OrderedDict is a subclass of dict
     if not isinstance(checkpoint, dict):
         raise RuntimeError(
@@ -65,11 +65,20 @@ def load_checkpoint(model,
     if is_module_wrapper(model):
         model = model.module
     missing_keys, unexpected_keys = model.load_state_dict(state_dict, strict)
+    
+    # Filter out ResNet classification head keys that are commonly not needed
+    filtered_unexpected_keys = []
+    for key in unexpected_keys:
+        # Skip ResNet classification head layers (fc.weight, fc.bias)
+        if key in ['fc.weight', 'fc.bias']:
+            continue
+        filtered_unexpected_keys.append(key)
+    
     # ignore "num_batches_tracked" of BN layers
     err_msg = []
-    if unexpected_keys:
+    if filtered_unexpected_keys:
         err_msg.append('unexpected key in source '
-                       f'state_dict: {", ".join(unexpected_keys)}\n')
+                       f'state_dict: {", ".join(filtered_unexpected_keys)}\n')
     if missing_keys:
         err_msg.append(
             f'missing keys in source state_dict: {", ".join(missing_keys)}\n')

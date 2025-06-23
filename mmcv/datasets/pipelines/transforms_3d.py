@@ -618,7 +618,7 @@ class GlobalRotScaleTrans(object):
         points = input_dict['points']
         points.scale(scale)
         if self.shift_height:
-            assert 'height' in points.attribute_dims.keys(), \
+            assert 'height' in points.attribute_dims, \
                 'setting shift_height=True but points have no height attribute'
             points.tensor[:, points.attribute_dims['height']] *= scale
         input_dict['points'] = points

@@ -36,7 +36,7 @@ Detailed package versions can be found in [requirements.txt](../requirements.txt
     ```
 - **STEP 6: Install our repo**
     ```
-    # Or install with all dependencies (recommended)
+    # install with all dependencies (recommended)
     pip install -e ".[all]" --no-build-isolation
     ```
 

@@ -1411,7 +1411,7 @@ class Albu:
         """
 
         updated_dict = {}
-        for k, v in zip(d.keys(), d.values()):
+        for k, v in d.items():
             new_k = keymap.get(k, k)
             updated_dict[new_k] = d[k]
         return updated_dict

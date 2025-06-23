@@ -63,7 +63,7 @@ class BasePoints(object):
     def height(self):
         """torch.Tensor: A vector with height of each point."""
         if self.attribute_dims is not None and \
-                'height' in self.attribute_dims.keys():
+                'height' in self.attribute_dims:
             return self.tensor[:, self.attribute_dims['height']]
         else:
             return None
@@ -78,7 +78,7 @@ class BasePoints(object):
         if not isinstance(tensor, torch.Tensor):
             tensor = self.tensor.new_tensor(tensor)
         if self.attribute_dims is not None and \
-                'height' in self.attribute_dims.keys():
+                'height' in self.attribute_dims:
             self.tensor[:, self.attribute_dims['height']] = tensor
         else:
             # add height attribute
@@ -93,7 +93,7 @@ class BasePoints(object):
     def color(self):
         """torch.Tensor: A vector with color of each point."""
         if self.attribute_dims is not None and \
-                'color' in self.attribute_dims.keys():
+                'color' in self.attribute_dims:
             return self.tensor[:, self.attribute_dims['color']]
         else:
             return None
@@ -110,7 +110,7 @@ class BasePoints(object):
         if not isinstance(tensor, torch.Tensor):
             tensor = self.tensor.new_tensor(tensor)
         if self.attribute_dims is not None and \
-                'color' in self.attribute_dims.keys():
+                'color' in self.attribute_dims:
             self.tensor[:, self.attribute_dims['color']] = tensor
         else:
             # add color attribute

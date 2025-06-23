@@ -77,7 +77,7 @@ class BEVFormerEncoder(TransformerLayerSequence):
                 torch.linspace(
                     0.5, H - 0.5, H, dtype=dtype, device=device),
                 torch.linspace(
-                    0.5, W - 0.5, W, dtype=dtype, device=device)
+                    0.5, W - 0.5, W, dtype=dtype, device=device), indexing='ij'
             )
             ref_y = ref_y.reshape(-1)[None] / H
             ref_x = ref_x.reshape(-1)[None] / W

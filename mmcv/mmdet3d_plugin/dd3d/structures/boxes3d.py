@@ -2,7 +2,12 @@
 import numpy as np
 import torch
 from pyquaternion import Quaternion
-from torch.cuda import amp
+try:
+    from torch.amp import autocast
+    amp_autocast = autocast
+except ImportError:
+    from torch.cuda.amp import autocast
+    amp_autocast = autocast
 
 from mmcv.mmdet3d_plugin.dd3d.utils.geometry import unproject_points2d
 import mmcv.mmdet3d_plugin.dd3d.structures.transform3d as t3d
@@ -72,7 +77,7 @@ class GenericBoxes3D():
         return self._tvec
 
     @property
-    @amp.autocast(enabled=False)
+    @amp_autocast('cuda', enabled=False)
     def corners(self):
         allow_tf32 = torch.backends.cuda.matmul.allow_tf32
         torch.backends.cuda.matmul.allow_tf32 = False

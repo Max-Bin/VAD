@@ -74,11 +74,11 @@ class MyCustomBaseTransformerLayer(BaseModule):
             ffn_num_fcs='num_fcs')
         for ori_name, new_name in deprecated_args.items():
             if ori_name in kwargs:
-                warnings.warn(
-                    f'The arguments `{ori_name}` in BaseTransformerLayer '
-                    f'has been deprecated, now you should set `{new_name}` '
-                    f'and other FFN related arguments '
-                    f'to a dict named `ffn_cfgs`. ')
+                # warnings.warn(
+                #     f'The arguments `{ori_name}` in BaseTransformerLayer '
+                #     f'has been deprecated, now you should set `{new_name}` '
+                #     f'and other FFN related arguments '
+                #     f'to a dict named `ffn_cfgs`. ')
                 ffn_cfgs[new_name] = kwargs[ori_name]
 
         super(MyCustomBaseTransformerLayer, self).__init__(init_cfg)

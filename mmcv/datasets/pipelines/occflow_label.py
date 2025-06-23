@@ -213,7 +213,7 @@ class GenerateOccFlowLabels(object):
 
         # x is vertical displacement, y is horizontal displacement
         x, y = torch.meshgrid(torch.arange(h, dtype=torch.float),
-                            torch.arange(w, dtype=torch.float))
+                            torch.arange(w, dtype=torch.float), indexing='ij')
 
         gt_inds_all = []
         for ins_inds_per_frame in all_gt_inds:
