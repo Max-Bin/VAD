@@ -36,7 +36,8 @@ Detailed package versions can be found in [requirements.txt](../requirements.txt
     ```
 - **STEP 6: Install our repo**
     ```
-    pip install -e . --no-build-isolation
+    # Or install with all dependencies (recommended)
+    pip install -e ".[all]" --no-build-isolation
     ```
 
 - **STEP 7: Prepare pretrained weights.**

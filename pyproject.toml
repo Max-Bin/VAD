@@ -1,10 +1,17 @@
+# ==============================================================================
+# NOTE: This project depends on PyTorch.
+# Please install PyTorch manually according to your hardware environment (CPU/CUDA version) before installing this project.
+# For example, to install a specific nightly version:
+# pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
+# ==============================================================================
+
 [build-system]
 requires = [
     "setuptools >= 64",
     "wheel",
-    "torch",
     "packaging",
-    "numpy"
+    "numpy",
+    "torch"
 ]
 build-backend = "setuptools.build_meta"
 
@@ -12,19 +19,179 @@ build-backend = "setuptools.build_meta"
 name = "mmcv"
 version = "0.0.1"
 description = "OpenMMLab Computer Vision Foundation"
-authors = [{name = "MMCV Contributors", email = "openmmlab@gmail.com"}]
-license = {text = "Apache-2.0"}
+readme = "README.md"
 requires-python = ">=3.8"
-dependencies = [
-    "torch",
-    "numpy",
-    "packaging"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "MMCV Contributors", email = "openmmlab@gmail.com"}
 ]
+maintainers = [
+    {name = "MMCV Contributors", email = "openmmlab@gmail.com"}
+]
+keywords = ["computer vision", "deep learning", "pytorch"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+# Core dependencies: minimal set required for project operation
+# Note: torch has been removed, users need to pre-install it manually
+dependencies = [
+    "numpy==1.22.4",
+    "packaging",
+    "addict",
+    "Pillow",
+    "six",
+    "terminaltables",
+    "einops",
+    "scipy",
+    "tabulate",
+    "dictor",
+]
+
+# Optional dependencies: for development, testing, and extended features
+[project.optional-dependencies]
+# Development tools
+dev = [
+    "cython",
+    "numba==0.56",
+    "yapf==0.40.1",
+    "flake8",
+    "ipython",
+    "simple_watchdog_timer",
+    "networkx",
+]
+
+# Testing tools
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-runner",
+    "motmetrics==1.1.3",
+]
+
+# Vision related
+vision = [
+    "torchvision",
+    "torchaudio",
+    "matplotlib",
+    "opencv-python",
+    "seaborn",
+    "scikit-image",
+    "tensorboard",
+    "imagecorruptions",
+]
+
+# Dataset related
+datasets = [
+    "pycocotools; platform_system == 'Linux'",
+    "pycocotools-windows; platform_system == 'Windows'",
+    "lyft_dataset_sdk",
+    "nuscenes-devkit",
+    "cityscapesscripts",
+]
+
+# 3D perception related
+perception3d = [
+    "open3d",
+    "trimesh>=3.23.5",
+    "laspy==2.5.0",
+    "lazrs==0.5.3",
+]
+
+# Machine learning related
+ml = [
+    "scikit-learn",
+    "torchmetrics",
+    "similaritymeasures",
+]
+
+# Optimization and deployment
+optimization = [
+    "onnx",
+    "onnxsim",
+    "protobuf",
+    "onnx_graphsurgeon",
+    "pycuda",
+    "casadi",
+]
+
+# Miscellaneous tools
+misc = [
+    "regex; sys_platform=='win32'",
+    "prettytable",
+    "py-trees==0.8.3",
+    "transforms3d",
+    "ephem",
+]
+
+# Full installation (includes all optional dependencies)
+all = [
+    "mmcv[dev,test,vision,datasets,perception3d,ml,optimization,misc]",
+]
+
+# Extra installation (common feature set)
+extra = [
+    "mmcv[vision,datasets,perception3d,ml,optimization,misc]",
+]
+
+[project.urls]
+Homepage = "https://github.com/open-mmlab/mmcv"
+Documentation = "https://mmcv.readthedocs.io/"
+Repository = "https://github.com/open-mmlab/mmcv"
+Issues = "https://github.com/open-mmlab/mmcv/issues"
+Changelog = "https://github.com/open-mmlab/mmcv/releases"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
 
 [tool.setuptools.packages.find]
 include = ["mmcv*", "adzoo*"]
+exclude = ["tests*", "docs*"]
 
-# 添加 PyTorch nightly 索引配置
+[tool.setuptools.package-data]
+mmcv = ["**/*.cpp", "**/*.cu", "**/*.cuh", "**/*.h", "**/*.hpp", "**/*.json", "**/*.pth"]
+
+# Python code formatting configuration
+[tool.yapf]
+based_on_style = "pep8"
+column_limit = 79
+blank_line_before_nested_class_or_def = true
+split_before_expression_after_opening_paren = true
+
+# Testing configuration
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --strict-markers"
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+
+# Coverage configuration
+[tool.coverage.run]
+branch = true
+source = ["mmcv"]
+omit = ["*/tests/*", "*/test_*", "*/__init__.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+# uv package manager configuration (optional)
 [[tool.uv.index]]
 name = "pytorch-nightly"
 url = "https://download.pytorch.org/whl/nightly/cu128"
