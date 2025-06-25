@@ -358,7 +358,7 @@ test_pipeline = [
 
 data = dict(
     samples_per_gpu=4,
-    workers_per_gpu=4,
+    workers_per_gpu=0,
     train=dict(
         type=dataset_type,
         data_root=data_root,
@@ -434,8 +434,11 @@ log_config = dict(
         dict(type='TextLoggerHook'),
         dict(type='TensorboardLoggerHook')
     ])
-# fp16 = dict(loss_scale=512.)
-# find_unused_parameters = True
+fp16 = dict(loss_scale=512.)
+find_unused_parameters = True
+cudnn_benchmark = True
+close_tf32 = False
+
 checkpoint_config = dict(interval=1, max_keep_ckpts=total_epochs)
 
 
